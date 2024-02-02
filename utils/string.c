@@ -4,5 +4,7 @@
 
 bool ends_with(char *s1, char *s2)
 {
-    return strcmp(s1 + strlen(s1) - strlen(s2), s2) == 0;
+    int s1_len = strlen(s1);
+    int s2_len = strlen(s2);
+    return s1_len > s2_len && (strcmp(s1 + s1_len - s2_len, s2) == 0);
 }
