@@ -24,25 +24,20 @@ void init_select_maps(GameState *state_ptr)
     for (int i = 0; i < found_count; i++)
     {
         map_argvs[i][0] = map_paths[i];
-
-        menu_items[i].display = map_paths[i];
-        menu_items[i].on_select = handle_map_select;
-        menu_items[i].argv = map_argvs[i];
-        menu_items[i].argc = 1;
+        fill_menu_item(menu_items + i, map_paths[i], handle_map_select, (void **)map_argvs[i], 1);
     }
 
     static GameState *back_argv[1];
     back_argv[0] = state_ptr;
 
-    menu_items[found_count].display = "<|Main menu|>";
-    menu_items[found_count].on_select = handle_back_to_main_menu;
-    menu_items[found_count].argv = back_argv;
-    menu_items[found_count].argc = 1;
+    fill_menu_item(
+        menu_items + found_count,
+        "<|Main menu|>",
+        handle_back_to_main_menu,
+        (void **)back_argv,
+        1);
 
-    menu_items[found_count + 1].display = NULL;
-    menu_items[found_count + 1].on_select = NULL;
-    menu_items[found_count + 1].argv = NULL;
-    menu_items[found_count + 1].argc = 0;
+    fill_menu_item(menu_items + found_count + 1, NULL, NULL, NULL, 0);
 
     init_menu_state(&sm_menu_state, menu_items);
 }

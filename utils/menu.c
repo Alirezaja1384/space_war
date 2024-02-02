@@ -62,3 +62,11 @@ void menu_handle_keys(MenuState *state_ptr, int key)
         break;
     }
 };
+
+void fill_menu_item(MenuItem *item_ptr, char *display, on_select_func on_select, void **argv, int argc)
+{
+    item_ptr->display = display;
+    item_ptr->on_select = on_select;
+    item_ptr->argv = argv;
+    item_ptr->argc = argc;
+}

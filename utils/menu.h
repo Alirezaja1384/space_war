@@ -12,7 +12,7 @@ typedef struct
 {
     char *display;
     on_select_func on_select;
-    void *argv;
+    void **argv;
     int argc;
 } MenuItem;
 
@@ -25,5 +25,7 @@ typedef struct
 void init_menu_state(MenuState *state_ptr, MenuItem *items);
 void render_menu(WINDOW *win, MenuState *state_ptr);
 void menu_handle_keys(MenuState *state_ptr, int key);
+
+void fill_menu_item(MenuItem *item_ptr, char *display, on_select_func on_select, void **argv, int argc);
 
 #endif
