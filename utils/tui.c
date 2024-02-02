@@ -22,7 +22,7 @@ WINDOW *setup_tui(void)
     init_mainwin();
     keypad(mainwin, true);
     wrefresh(mainwin);
-    wtimeout(mainwin, 200);
+    wtimeout(mainwin, 100);
     wrefresh(mainwin);
 
     return mainwin;
