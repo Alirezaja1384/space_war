@@ -28,11 +28,11 @@ void tick_page(WINDOW *win, GameState *state_ptr, int key)
             funcs.init(state_ptr);
     }
 
+    // Render the page
     if (funcs.render != NULL)
-        // Render the page
         funcs.render(win);
 
-    // Remember the last page
+    // Remember the page
     last_page = state_ptr->page;
 
     // Handle keypresses
@@ -45,22 +45,10 @@ PageFuncs get_page_funcs(Page page)
     switch (page)
     {
     case PAGE_MAIN_MENU:
-        PageFuncs main_menu_funcs = {
-            init_main_menu,
-            main_menu_handle_keys,
-            render_main_menu,
-            destroy_main_menu};
-
-        return main_menu_funcs;
+        return get_main_menu_page_funcs();
 
     case PAGE_SELECT_MAP:
-        PageFuncs select_map_funcs = {
-            init_select_maps,
-            select_maps_handle_keys,
-            render_select_maps,
-            destroy_select_maps};
-
-        return select_map_funcs;
+        return get_select_map_page_funcs();
 
     default:
         error("Invalid page!");

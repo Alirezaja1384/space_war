@@ -95,3 +95,14 @@ void handle_map_select(void *argv[], int argc)
     assert(argc == 1);
     char *map_path = argv[0];
 }
+
+PageFuncs get_select_map_page_funcs(void)
+{
+    PageFuncs funcs = {
+        init_select_maps,
+        select_maps_handle_keys,
+        render_select_maps,
+        destroy_select_maps};
+
+    return funcs;
+}

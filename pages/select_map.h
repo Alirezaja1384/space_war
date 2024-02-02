@@ -1,6 +1,8 @@
 #ifndef sw_pages_select_map
 #define sw_pages_select_map
 
+#include "render.h"
+
 #define MAX_MAPS_COUNT 10
 
 #define MAPS_DIR "./maps/"
@@ -12,5 +14,7 @@ void render_select_maps(WINDOW *win);
 void destroy_select_maps(void);
 
 int find_maps(char **file_paths_ptr, int max_finds);
+
+PageFuncs get_select_map_page_funcs(void);
 
 #endif

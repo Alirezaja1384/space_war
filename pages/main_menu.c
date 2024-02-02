@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "../utils/menu.h"
 #include "../game.h"
+#include "main_menu.h"
 
 MenuState mm_menu_state;
 
@@ -47,4 +48,15 @@ void handle_play(void *argv[], int argc)
     assert(argc == 1);
     GameState *state_ptr = argv[0];
     state_ptr->page = PAGE_SELECT_MAP;
+}
+
+PageFuncs get_main_menu_page_funcs(void)
+{
+    PageFuncs funcs = {
+        init_main_menu,
+        main_menu_handle_keys,
+        render_main_menu,
+        destroy_main_menu};
+
+    return funcs;
 }
