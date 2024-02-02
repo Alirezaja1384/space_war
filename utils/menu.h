@@ -6,10 +6,12 @@
 
 #define MENU_ITEM_MAX_LEN 50
 
+typedef void (*on_select_func)(void *argv[], int argc);
+
 typedef struct
 {
     char *display;
-    void (*on_select)(void *argv[], int argc);
+    on_select_func on_select;
     void *argv;
     int argc;
 } MenuItem;

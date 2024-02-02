@@ -52,11 +52,12 @@ void menu_handle_keys(MenuState *state_ptr, int key)
         break;
 
     case '\n':
-        void (*on_select)(void *argv[], int argc) = state_ptr->items[state_ptr->current_item].on_select;
-
-        MenuItem current_item = state_ptr->items[state_ptr->current_item];
+        on_select_func on_select = state_ptr->items[state_ptr->current_item].on_select;
         if (on_select != NULL)
+        {
+            MenuItem current_item = state_ptr->items[state_ptr->current_item];
             on_select(current_item.argv, current_item.argc);
+        }
 
         break;
     }
