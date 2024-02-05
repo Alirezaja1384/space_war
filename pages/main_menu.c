@@ -55,6 +55,7 @@ PageFuncs get_main_menu_page_funcs(void)
     PageFuncs funcs = {
         init_main_menu,
         main_menu_handle_keys,
+        NULL,
         render_main_menu,
         destroy_main_menu};
 

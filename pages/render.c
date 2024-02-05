@@ -28,6 +28,10 @@ void tick_page(WINDOW *win, GameState *state_ptr, int key)
             funcs.init(state_ptr);
     }
 
+    // Sync
+    if (funcs.sync != NULL)
+        funcs.sync(state_ptr);
+
     // Render the page
     if (funcs.render != NULL)
         funcs.render(win);

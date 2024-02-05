@@ -1,6 +1,9 @@
 #ifndef sw_game
 #define sw_game
 
+#define MW_HEIGHT 30
+#define MW_WIDTH 150
+
 typedef enum
 {
     PAGE_MAIN_MENU = 1,

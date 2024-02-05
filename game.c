@@ -11,7 +11,7 @@ GameState game_state;
 
 int main(void)
 {
-    WINDOW *mainwin = setup_tui();
+    WINDOW *mainwin = setup_tui(MW_HEIGHT, MW_WIDTH);
     init_game();
 
     int inp;

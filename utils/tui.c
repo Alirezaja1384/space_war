@@ -7,7 +7,7 @@
 
 WINDOW *mainwin = NULL;
 
-WINDOW *setup_tui(void)
+WINDOW *setup_tui(int height, int width)
 {
     WINDOW *scr = initscr();
     check(scr != NULL, "Unable to initialize screen");
@@ -19,10 +19,10 @@ WINDOW *setup_tui(void)
     register_colors();
     refresh();
 
-    init_mainwin();
+    init_mainwin(height, width);
     keypad(mainwin, true);
     wrefresh(mainwin);
-    wtimeout(mainwin, 100);
+    wtimeout(mainwin, NCURSES_TIMEOUT);
     wrefresh(mainwin);
 
     return mainwin;
@@ -33,9 +33,9 @@ void destroy_tui(void)
     endwin();
 }
 
-WINDOW *init_mainwin(void)
+WINDOW *init_mainwin(int height, int width)
 {
-    mainwin = newwin(MW_HEIGHT, MW_WIDTH, Y_START, X_START);
+    mainwin = newwin(height, width, (LINES - height) / 2, (COLS - width) / 2);
     check(mainwin != NULL, "Unable to initialize main window");
 }
 

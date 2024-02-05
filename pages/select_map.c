@@ -10,6 +10,8 @@
 MenuState sm_menu_state;
 char *map_paths[MAX_MAPS_COUNT];
 
+int find_maps(char **file_paths_ptr, int max_finds);
+
 void handle_map_select(void *argv[], int argc);
 void handle_back_to_main_menu(void *argv[], int argc);
 
@@ -96,6 +98,7 @@ PageFuncs get_select_map_page_funcs(void)
     PageFuncs funcs = {
         init_select_maps,
         select_maps_handle_keys,
+        NULL,
         render_select_maps,
         destroy_select_maps};
 

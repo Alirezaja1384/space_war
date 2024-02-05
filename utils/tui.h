@@ -3,16 +3,12 @@
 
 #include <ncurses.h>
 
-#define MW_HEIGHT 30
-#define MW_WIDTH 150
+#define NCURSES_TIMEOUT 100
 
-#define Y_START (LINES - MW_HEIGHT) / 2
-#define X_START (COLS - MW_WIDTH) / 2
-
-WINDOW *setup_tui(void);
+WINDOW *setup_tui(int height, int width);
 void destroy_tui(void);
 
-WINDOW *init_mainwin(void);
+WINDOW *init_mainwin(int height, int width);
 WINDOW *get_mainwin(void);
 
 WINDOW *get_win(void);
