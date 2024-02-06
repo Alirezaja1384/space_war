@@ -1,3 +1,4 @@
+#include <locale.h>
 #include <ncurses.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -9,6 +10,8 @@ WINDOW *mainwin = NULL;
 
 WINDOW *setup_tui(int height, int width)
 {
+    check(setlocale(LC_CTYPE, LOCALE) != NULL, "Unable to set locale to " LOCALE);
+
     WINDOW *scr = initscr();
     check(scr != NULL, "Unable to initialize screen");
 

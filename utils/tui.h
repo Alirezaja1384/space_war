@@ -3,6 +3,7 @@
 
 #include <ncurses.h>
 
+#define LOCALE "en_US.utf8"
 #define NCURSES_TIMEOUT 100
 
 WINDOW *setup_tui(int height, int width);
