@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <dirent.h>
 #include <assert.h>
+#include <string.h>
 #include "../utils/assertion.h"
 #include "../utils/string.h"
 #include "../utils/menu.h"
@@ -17,16 +19,17 @@ void handle_back_to_main_menu(void *argv[], int argc);
 
 void init_select_maps(GameState *state_ptr)
 {
-    static char *map_argvs[MAX_MAPS_COUNT + 1][1];
-
+    static void *map_argvs[MAX_MAPS_COUNT + 1][2];
     static MenuItem menu_items[MAX_MAPS_COUNT + 1];
 
     int found_count = find_maps(map_paths, MAX_MAPS_COUNT);
 
     for (int i = 0; i < found_count; i++)
     {
-        map_argvs[i][0] = map_paths[i];
-        fill_menu_item(menu_items + i, map_paths[i], handle_map_select, (void **)map_argvs[i], 1);
+        map_argvs[i][0] = (void *)state_ptr;
+        map_argvs[i][1] = (void *)map_paths[i];
+
+        fill_menu_item(menu_items + i, map_paths[i], handle_map_select, map_argvs[i], 2);
     }
 
     static GameState *back_argv[1];
@@ -51,10 +54,11 @@ void select_maps_handle_keys(GameState *state_ptr, int key)
 
 void render_select_maps(WINDOW *win)
 {
+    wclear(win);
     render_menu(win, &sm_menu_state);
 }
 
-void destroy_select_maps(void)
+void destroy_select_maps(GameState *state_ptr)
 {
     sm_menu_state.current_item = 0;
 }
@@ -89,8 +93,17 @@ void handle_back_to_main_menu(void *argv[], int argc)
 
 void handle_map_select(void *argv[], int argc)
 {
-    assert(argc == 1);
-    char *map_path = argv[0];
+    assert(argc == 2);
+    GameState *state_ptr = argv[0];
+    char *map_name = argv[1];
+
+    check(strlen(MAPS_DIR) + strlen(map_name) < 512, "File path too long!");
+
+    char relative_path[512] = MAPS_DIR;
+    strcat(relative_path, map_name);
+
+    state_ptr->map_path = realpath(relative_path, NULL);
+    state_ptr->page = PAGE_GAMEPLAY;
 }
 
 PageFuncs get_select_map_page_funcs(void)

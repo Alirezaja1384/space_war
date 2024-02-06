@@ -29,10 +29,11 @@ void main_menu_handle_keys(GameState *state_ptr, int key)
 
 void render_main_menu(WINDOW *win)
 {
+    wclear(win);
     render_menu(win, &mm_menu_state);
 }
 
-void destroy_main_menu()
+void destroy_main_menu(GameState *state_ptr)
 {
     mm_menu_state.current_item = 0;
 }

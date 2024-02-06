@@ -5,12 +5,14 @@
 #include "../utils/assertion.h"
 #include "main_menu.h"
 #include "select_map.h"
+// #include "gameplay.h"
 #include "render.h"
 
 PageFuncs get_page_funcs(Page page);
 
 void tick_page(WINDOW *win, GameState *state_ptr, int key)
 {
+    static int last_key = ERR;
     static int last_page = -1;
     PageFuncs funcs = get_page_funcs(state_ptr->page);
 
@@ -21,7 +23,7 @@ void tick_page(WINDOW *win, GameState *state_ptr, int key)
         {
             PageFuncs last_page_funcs = get_page_funcs(last_page);
             if (last_page_funcs.destroy != NULL)
-                last_page_funcs.destroy();
+                last_page_funcs.destroy(state_ptr);
         }
 
         if (funcs.init != NULL)
@@ -41,7 +43,13 @@ void tick_page(WINDOW *win, GameState *state_ptr, int key)
 
     // Handle keypresses
     if (key != ERR && funcs.handle_keys != NULL)
-        funcs.handle_keys(state_ptr, key);
+    {
+        if (!DISALLOW_KEY_HOLD || last_key == ERR || key != last_key)
+            funcs.handle_keys(state_ptr, key);
+    }
+
+    // Remember the pressed key
+    last_key = key;
 }
 
 PageFuncs get_page_funcs(Page page)
@@ -53,6 +61,9 @@ PageFuncs get_page_funcs(Page page)
 
     case PAGE_SELECT_MAP:
         return get_select_map_page_funcs();
+
+    // case PAGE_GAMEPLAY:
+    //     return get_gameplay_page_funcs();
 
     default:
         error("Invalid page!");
