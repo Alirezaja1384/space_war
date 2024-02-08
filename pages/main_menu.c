@@ -27,7 +27,7 @@ void main_menu_handle_keys(GameState *state_ptr, int key)
     menu_handle_keys(&mm_menu_state, key);
 }
 
-void render_main_menu(WINDOW *win)
+void render_main_menu(GameState *state_ptr, WINDOW *win)
 {
     wclear(win);
     render_menu(win, &mm_menu_state);

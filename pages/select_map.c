@@ -35,14 +35,20 @@ void init_select_maps(GameState *state_ptr)
     static GameState *back_argv[1];
     back_argv[0] = state_ptr;
 
-    fill_menu_item(
-        menu_items + found_count,
-        "<|Main menu|>",
-        handle_back_to_main_menu,
-        (void **)back_argv,
-        1);
+    if (state_ptr->played_rounds > 0)
+        fill_menu_item(menu_items + found_count, NULL, NULL, NULL, 0);
+    else
+    {
+        // Show main menu item if user didn't play an game yet
+        fill_menu_item(
+            menu_items + found_count,
+            "<|Main menu|>",
+            handle_back_to_main_menu,
+            (void **)back_argv,
+            1);
 
-    fill_menu_item(menu_items + found_count + 1, NULL, NULL, NULL, 0);
+        fill_menu_item(menu_items + found_count + 1, NULL, NULL, NULL, 0);
+    }
 
     init_menu_state(&sm_menu_state, menu_items);
 }
@@ -52,7 +58,7 @@ void select_maps_handle_keys(GameState *state_ptr, int key)
     menu_handle_keys(&sm_menu_state, key);
 }
 
-void render_select_maps(WINDOW *win)
+void render_select_maps(GameState *state_ptr, WINDOW *win)
 {
     wclear(win);
     render_menu(win, &sm_menu_state);
