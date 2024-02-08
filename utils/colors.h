@@ -16,6 +16,7 @@ typedef enum
     CP_WHITE_BLUE = 11,
     CP_WHITE_MAGENTA = 12,
     CP_BLACK_CYAN = 13,
+    CP_WHITE_BLACK = 14,
 } ColorPair;
 
 void register_colors(void);

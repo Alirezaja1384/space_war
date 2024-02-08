@@ -2,7 +2,7 @@
 #include "colors.h"
 #include "assertion.h"
 
-#define PAIRS_COUNT 13
+#define PAIRS_COUNT 14
 
 void register_colors(void)
 {
@@ -22,6 +22,7 @@ void register_colors(void)
         {CP_WHITE_BLUE, COLOR_WHITE, COLOR_BLUE},
         {CP_WHITE_MAGENTA, COLOR_WHITE, COLOR_MAGENTA},
         {CP_BLACK_CYAN, COLOR_BLACK, COLOR_CYAN},
+        {CP_WHITE_BLACK, COLOR_WHITE, COLOR_BLACK},
     };
 
     for (size_t i = 0; i < PAIRS_COUNT; i++)
