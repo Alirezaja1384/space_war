@@ -30,19 +30,23 @@ void init_game()
 {
     game_state.page = PAGE_MAIN_MENU;
     game_state.map_path = NULL;
+    game_state.round_winner = -1;
+    game_state.target_rounds = 2;
+    game_state.played_rounds = 0;
 
     strcpy(game_state.user1.username, "user1");
-    strcpy(game_state.user2.username, "user2");
-
     game_state.user1_meta.initial_lives = 5;
-    game_state.user1_meta.current_game_scores = 0;
+    game_state.user1_meta.rounds_won = 0;
 
+    strcpy(game_state.user2.username, "user2");
     game_state.user2_meta.initial_lives = 5;
-    game_state.user2_meta.current_game_scores = 0;
+    game_state.user2_meta.rounds_won = 0;
 }
 
 void exit_game(void)
 {
+    destroy_current_page(&game_state);
+
     WINDOW *win = get_win();
     wclear(win);
     wprintw(win, "Bye ...");

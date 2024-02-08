@@ -9,8 +9,9 @@
 typedef enum
 {
     PAGE_MAIN_MENU = 1,
-    PAGE_SELECT_MAP = 2,
-    PAGE_GAMEPLAY = 3,
+    PAGE_SELECT_MAP,
+    PAGE_GAMEPLAY,
+    PAGE_ROUND_FINISHED,
 } Page;
 
 typedef struct
@@ -23,7 +24,7 @@ typedef struct
 typedef struct
 {
     int initial_lives;
-    int current_game_scores;
+    int rounds_won;
 } UserMeta;
 
 typedef struct
@@ -35,6 +36,10 @@ typedef struct
 
     UserMeta user1_meta;
     UserMeta user2_meta;
+
+    int round_winner;
+    int target_rounds;
+    int played_rounds;
 
     char *map_path;
 } GameState;
