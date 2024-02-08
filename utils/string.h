@@ -4,5 +4,6 @@
 #include <stdbool.h>
 
 bool ends_with(char *s1, char *s2);
+size_t utf8len(char *s);
 
 #endif
