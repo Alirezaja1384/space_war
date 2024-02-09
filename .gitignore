@@ -1,4 +1,6 @@
 space_war
-maps/*
+*.maps
+!maps/*.maps
 *example*
 .vscode/*
+*.out
