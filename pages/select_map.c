@@ -50,7 +50,7 @@ void init_select_maps(GameState *state_ptr)
         fill_menu_item(menu_items + found_count + 1, NULL, NULL, NULL, 0);
     }
 
-    init_menu_state(&sm_menu_state, menu_items);
+    init_menu_state(&sm_menu_state, "Select a map:", menu_items);
 }
 
 void select_maps_handle_keys(GameState *state_ptr, int key)

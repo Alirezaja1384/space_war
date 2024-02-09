@@ -18,11 +18,12 @@ typedef struct
 
 typedef struct
 {
+    char *title;
     MenuItem *items;
     int current_item;
 } MenuState;
 
-void init_menu_state(MenuState *state_ptr, MenuItem *items);
+void init_menu_state(MenuState *state_ptr, char *title, MenuItem *items);
 void render_menu(WINDOW *win, MenuState *state_ptr);
 void menu_handle_keys(MenuState *state_ptr, int key);
 

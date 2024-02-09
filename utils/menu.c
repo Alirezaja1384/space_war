@@ -5,8 +5,10 @@
 #include "colors.h"
 #include "assertion.h"
 
-void init_menu_state(MenuState *state_ptr, MenuItem *items)
+void init_menu_state(MenuState *state_ptr, char *title, MenuItem *items)
 {
+    state_ptr->title = title;
+
     for (int i = 0; items[i].display != NULL; i++)
         if (strlen(items[i].display) > MENU_ITEM_MAX_LEN)
             error("Out of range menu item!");
@@ -17,6 +19,9 @@ void init_menu_state(MenuState *state_ptr, MenuItem *items)
 
 void render_menu(WINDOW *win, MenuState *state_ptr)
 {
+    if (state_ptr->title != NULL)
+        wprintw(win, "%s\n", state_ptr->title);
+
     for (int i = 0; state_ptr->items[i].display != NULL; i++)
     {
         // Colorize If the item is selected

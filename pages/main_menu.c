@@ -19,7 +19,7 @@ void init_main_menu(GameState *state_ptr)
         {"Exit", handle_exit, NULL, 0},
         {NULL, NULL, NULL, 0}};
 
-    init_menu_state(&mm_menu_state, menu_items);
+    init_menu_state(&mm_menu_state, NULL, menu_items);
 }
 
 void main_menu_handle_keys(GameState *state_ptr, int key)
