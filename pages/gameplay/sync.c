@@ -182,10 +182,7 @@ static void finish_round_if_anyone_lost(GameState *game_state_ptr, GameplayState
     meta_ptr->rounds_won++;
 
     if (game_state_ptr->played_rounds >= game_state_ptr->target_rounds)
-    {
-        // TODO: Implement PAGE_GAME_FINISHED
-        game_state_ptr->page = PAGE_ROUND_FINISHED;
-    }
+        game_state_ptr->page = PAGE_GAME_FINISHED;
     else
         game_state_ptr->page = PAGE_ROUND_FINISHED;
 }

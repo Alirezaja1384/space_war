@@ -7,6 +7,7 @@
 #include "select_map.h"
 #include "gameplay/page.h"
 #include "round_finished.h"
+#include "game_finished.h"
 #include "render.h"
 
 PageFuncs get_page_funcs(Page page);
@@ -77,6 +78,9 @@ PageFuncs get_page_funcs(Page page)
 
     case PAGE_ROUND_FINISHED:
         return get_round_finished_funcs();
+
+    case PAGE_GAME_FINISHED:
+        return get_game_finished_funcs();
 
     default:
         error("Invalid page!");

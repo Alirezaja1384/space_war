@@ -12,17 +12,18 @@ typedef enum
     PAGE_SELECT_MAP,
     PAGE_GAMEPLAY,
     PAGE_ROUND_FINISHED,
+    PAGE_GAME_FINISHED,
 } Page;
 
 typedef struct
 {
+    char *id;
     char username[MAX_USERNAME_LENGTH + 1];
-    char email[MAX_EMAIL_LENGTH + 1];
-    char password[MAX_PASSWORD_LENGTH + 1];
 } User;
 
 typedef struct
 {
+    bool signed_in;
     int initial_lives;
     int rounds_won;
 } UserMeta;
