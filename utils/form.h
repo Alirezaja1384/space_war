@@ -10,5 +10,7 @@
 typedef void (*validation_error_handler)(FORM *, FIELD *);
 
 bool form_handle_keys(FORM *form, int key, validation_error_handler error_handler);
+FIELD *label_field(char *text, int height, int width, int y, int x);
+void apply_modal_style(WINDOW *win, ColorPair cp, char *title);
 
 #endif

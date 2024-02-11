@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
+#include "assertion.h"
+#include "colors.h"
 #include "form.h"
 
 static bool validate_form(FORM *form, validation_error_handler error_handler)
@@ -87,3 +89,21 @@ bool form_handle_keys(FORM *form, int key, validation_error_handler error_handle
 
     return submit;
 };
+
+FIELD *label_field(char *text, int height, int width, int y_start, int x_start)
+{
+
+    FIELD *label = not_null(new_field(height, width, y_start, x_start, 0, 0));
+    set_field_buffer(label, 0, text);
+    set_field_opts(label, O_VISIBLE | O_PUBLIC | O_AUTOSKIP);
+
+    return label;
+}
+
+void apply_modal_style(WINDOW *win, ColorPair cp, char *title)
+{
+    box(win, 0, 0);
+    wbkgd(win, COLOR_PAIR(cp));
+    mvwprintw(win, 0, 2, " %s ", title);
+    mvwprintw(win, getmaxy(win) - 1, getmaxx(win) / 2 - 13, " Press 'Enter' to submit ");
+}

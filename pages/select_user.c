@@ -147,10 +147,7 @@ static void handle_user_create(void *argv[], int argc)
 
     int m_height = MW_HEIGHT / 4, m_width = MW_WIDTH / 3;
 
-    FIELD *username_label = not_null(new_field(1, m_width - 4, 2, 2, 0, 0));
-    set_field_buffer(username_label, 0, "Enter username (Characters/digits):");
-    set_field_opts(username_label, O_VISIBLE | O_PUBLIC | O_AUTOSKIP);
-
+    FIELD *username_label = label_field("Enter username (Characters/digits):", 1, m_width - 4, 2, 2);
     FIELD *username_field = not_null(new_field(1, m_width - 4, 3, 2, 0, 0));
     set_field_opts(username_field, O_VISIBLE | O_PUBLIC | O_EDIT | O_ACTIVE);
     set_field_back(username_field, COLOR_PAIR(CP_BLACK_CYAN) | A_UNDERLINE);
@@ -171,11 +168,7 @@ static void handle_user_create(void *argv[], int argc)
     set_form_sub(form, modal_win);
     post_form(form);
 
-    box(modal_win, 0, 0);
-    wbkgd(modal_win, COLOR_PAIR(CP_BLACK_CYAN));
-    mvwprintw(modal_win, 0, 1, "Create new user");
-    mvwprintw(modal_win, m_height - 1, (m_width - 23) / 2, "Press 'Enter' to submit");
-
+    apply_modal_style(modal_win, CP_BLACK_CYAN, "Create new user!");
     wrefresh(form_win);
     wrefresh(modal_win);
     refresh();
