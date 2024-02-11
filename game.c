@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "utils/tui.h"
+#include "utils/users.h"
 #include "utils/colors.h"
 #include "utils/assertion.h"
 #include "pages/render.h"
@@ -36,11 +37,14 @@ void init_game()
 
     game_state.user1_meta = (UserMeta){false, 5, 0};
     game_state.user2_meta = (UserMeta){false, 5, 0};
+
+    users_init();
 }
 
 void exit_game(void)
 {
     destroy_current_page(&game_state);
+    users_free();
 
     WINDOW *win = get_win();
     wclear(win);
