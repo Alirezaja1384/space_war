@@ -7,8 +7,6 @@
 
 #define MAX_USERS MW_HEIGHT - 3
 
-#define USERNAME_REGEX "^[a-zA-Z0-9\\-\\_]{" MIN_USERNAME_LENGTH_STR "," MAX_USERNAME_LENGTH_STR "} *$"
-
 PageFuncs get_select_user_funcs(void);
 
 #endif

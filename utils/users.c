@@ -89,6 +89,18 @@ void logout_user(GameState *state, UserIndex target_user)
     meta_ptr->signed_in = false;
 }
 
+void apply_user_changes(GameState *state)
+{
+    dump_users();
+
+    // Login users again to update their profiles
+    if (state->user1_meta.signed_in)
+        login_user(state, USER_1, get_user_by_id(state->user1.id));
+
+    if (state->user2_meta.signed_in)
+        login_user(state, USER_2, get_user_by_id(state->user2.id));
+}
+
 UserNode *create_user(const char *username)
 {
     UserNode *unode = allocate_user_node();
@@ -111,6 +123,16 @@ UserNode *create_user(const char *username)
     dump_users();
 }
 
+bool change_username(User *user, const char *username)
+{
+    if (get_user_by_name(username) != NULL)
+        return false;
+
+    user->username[0] = '\0';
+    strncat(user->username, username, MAX_USERNAME_LENGTH);
+    return true;
+}
+
 UserNode *get_users_head()
 {
     users_init();
@@ -128,12 +150,12 @@ static UserNode *get_users_tail()
     return node;
 }
 
-User *get_user_by_id(const char *name)
+User *get_user_by_id(const char *id)
 {
     UserNode *current_node = get_users_head();
     while (current_node != NULL)
     {
-        if (strcmp(current_node->user->id, name) == 0)
+        if (strcmp(current_node->user->id, id) == 0)
             return current_node->user;
 
         current_node = current_node->next;

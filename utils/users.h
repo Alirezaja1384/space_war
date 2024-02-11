@@ -26,10 +26,13 @@ void users_free();
 
 void login_user(GameState *state, UserIndex target_user, User *user);
 void logout_user(GameState *state, UserIndex target_user);
+void apply_user_changes(GameState *state);
 
 UserNode *create_user(const char *username);
+bool change_username(User *user, const char *username);
+
 UserNode *get_users_head();
-User *get_user_by_id(const char *name);
+User *get_user_by_id(const char *id);
 User *get_user_by_name(const char *name);
 
 #endif

@@ -11,6 +11,7 @@
 #include "../utils/users.h"
 #include "../utils/string.h"
 #include "../utils/assertion.h"
+#include "../limits.h"
 #include "../game.h"
 #include "select_user.h"
 
