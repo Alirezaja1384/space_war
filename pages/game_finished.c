@@ -74,13 +74,15 @@ void render_game_finished(GameState *state_ptr, WINDOW *win)
     wprintw(win, result_text);
     wattr_off(win, result_text_color, NULL);
 
-    wmove(win, middle_y, middle_x - 16);
+    wmove(win, middle_y, middle_x - 14);
     wprintw(win, "Going back home in %d seconds!", seconds_remaining());
 }
 
 static void destroy_game_finished(GameState *state_ptr)
 {
     state_ptr->round_winner = -1;
+    state_ptr->played_rounds = -1;
+    state_ptr->target_rounds = -1;
 }
 
 PageFuncs get_game_finished_funcs(void)
