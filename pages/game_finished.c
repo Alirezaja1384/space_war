@@ -8,8 +8,6 @@
 #include "render.h"
 #include "game_finished.h"
 
-// TODO: Show rounds won
-
 static time_t restart_at;
 static GameResult game_result;
 
@@ -57,17 +55,25 @@ void render_game_finished(GameState *state_ptr, WINDOW *win)
     {
     case PLAYER_1_WON:
         result_text_color = PLAYER_1_COLOR_PAIR;
-        snprintf(result_text, RESULT_MAX_LEN, "%s won the game!", state_ptr->user1.username);
+        snprintf(result_text, RESULT_MAX_LEN, "%s won the game! (%d-%d)",
+                 state_ptr->user1.username,
+                 state_ptr->user1_meta.rounds_won,
+                 state_ptr->user2_meta.rounds_won);
         break;
 
     case PLAYER_2_WON:
         result_text_color = PLAYER_2_COLOR_PAIR;
-        snprintf(result_text, RESULT_MAX_LEN, "%s won the game!", state_ptr->user2.username);
+        snprintf(result_text, RESULT_MAX_LEN, "%s won the game! (%d-%d)",
+                 state_ptr->user2.username,
+                 state_ptr->user2_meta.rounds_won,
+                 state_ptr->user1_meta.rounds_won);
         break;
 
     case DRAW:
         result_text_color = DRAW_COLOR_PAIR;
-        snprintf(result_text, RESULT_MAX_LEN, "Draw!");
+        snprintf(result_text, RESULT_MAX_LEN, "Draw! (%d-%d)",
+                 state_ptr->user1_meta.rounds_won,
+                 state_ptr->user2_meta.rounds_won);
         break;
 
     default:
