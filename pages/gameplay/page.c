@@ -45,7 +45,13 @@ static void init_gameplay(GameState *state_ptr)
     assert(state_ptr->user2_meta.signed_in);
 
     if (state_ptr->played_rounds < 1)
+    {
+        // Reset rounds_won for each user if current round is the first
+        state_ptr->user1_meta.rounds_won = 0;
+        state_ptr->user2_meta.rounds_won = 0;
+
         prompt_game_conf(state_ptr);
+    }
 
     // Initialize map and acquirable items
     load_map(state_ptr->map_path);
