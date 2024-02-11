@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../game.h"
+#include "../utils/history.h"
 #include "../utils/assertion.h"
 #include "gameplay/definations.h"
 #include "render.h"
@@ -9,13 +10,8 @@
 
 // TODO: Show rounds won
 
-time_t restart_at;
-
-static enum {
-    DRAW,
-    PLAYER_1_WON,
-    PLAYER_2_WON
-} game_result;
+static time_t restart_at;
+static GameResult game_result;
 
 static int seconds_remaining(void)
 {
@@ -29,6 +25,16 @@ void init_game_finished(GameState *state_ptr)
                       ? PLAYER_1_WON
                   : u2_meta.rounds_won > u1_meta.rounds_won ? PLAYER_2_WON
                                                             : DRAW;
+    HistRecord hist_record;
+    hist_record.result = game_result;
+
+    hist_record.player_1_id[0] = '\0';
+    strncat(hist_record.player_1_id, state_ptr->user1.id, ID_LENGTH);
+
+    hist_record.player_2_id[0] = '\0';
+    strncat(hist_record.player_2_id, state_ptr->user2.id, ID_LENGTH);
+
+    append_hist_record(hist_record);
     restart_at = time(NULL) + RESTART_GAME_IN;
 }
 

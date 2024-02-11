@@ -8,6 +8,7 @@
 MenuState mm_menu_state;
 
 static void handle_exit(void *argv[], int argc);
+static void handle_history(void *argv[], int argc);
 static void handle_logout(void *argv[], int argc);
 static void handle_play(void *argv[], int argc);
 
@@ -18,6 +19,7 @@ void init_main_menu(GameState *state_ptr)
 
     static MenuItem menu_items[] = {
         {"Play", handle_play, state_argv, 1},
+        {"History", handle_history, state_argv, 1},
         {"Logout", handle_logout, state_argv, 1},
         {"Exit", handle_exit, NULL, 0},
         {NULL, NULL, NULL, 0}};
@@ -46,6 +48,15 @@ static void handle_play(void *argv[], int argc)
     assert(argc == 1);
     GameState *state_ptr = argv[0];
     state_ptr->page = PAGE_SELECT_USER; // Select second user
+}
+
+static void handle_history(void *argv[], int argc)
+{
+    assert(argc == 1);
+    GameState *state_ptr = argv[0];
+
+    logout_user(state_ptr, USER_1);
+    state_ptr->page = PAGE_HISTORY;
 }
 
 static void handle_logout(void *argv[], int argc)

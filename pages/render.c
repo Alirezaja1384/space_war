@@ -5,6 +5,7 @@
 #include "../utils/assertion.h"
 #include "select_user.h"
 #include "main_menu.h"
+#include "history.h"
 #include "select_map.h"
 #include "gameplay/page.h"
 #include "round_finished.h"
@@ -73,6 +74,9 @@ PageFuncs get_page_funcs(Page page)
 
     case PAGE_MAIN_MENU:
         return get_main_menu_page_funcs();
+
+    case PAGE_HISTORY:
+        return get_history_funcs();
 
     case PAGE_SELECT_MAP:
         return get_select_map_page_funcs();
