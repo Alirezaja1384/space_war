@@ -28,18 +28,13 @@ int main(void)
 
 void init_game()
 {
-    game_state.page = PAGE_MAIN_MENU;
+    game_state.page = PAGE_SELECT_USER;
     game_state.map_path = NULL;
     game_state.round_winner = -1;
     game_state.target_rounds = 2;
     game_state.played_rounds = 0;
 
-    strcpy(game_state.user1.id, "1af910b4-9d6e-4512-b680-2fc90513a2b4");
-    strcpy(game_state.user1.username, "user1");
     game_state.user1_meta = (UserMeta){false, 5, 0};
-
-    strcpy(game_state.user1.id, "adf6e0a7-7f23-4742-966f-9470c5c5239a");
-    strcpy(game_state.user2.username, "user2");
     game_state.user2_meta = (UserMeta){false, 5, 0};
 }
 

@@ -3,6 +3,7 @@
 #include <ncurses.h>
 #include "../game.h"
 #include "../utils/assertion.h"
+#include "select_user.h"
 #include "main_menu.h"
 #include "select_map.h"
 #include "gameplay/page.h"
@@ -67,6 +68,9 @@ PageFuncs get_page_funcs(Page page)
 {
     switch (page)
     {
+    case PAGE_SELECT_USER:
+        return get_select_user_funcs();
+
     case PAGE_MAIN_MENU:
         return get_main_menu_page_funcs();
 

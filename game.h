@@ -1,6 +1,7 @@
 #ifndef sw_game
 #define sw_game
 
+#include <stdbool.h>
 #include "limits.h"
 
 #define MW_HEIGHT 30
@@ -8,7 +9,8 @@
 
 typedef enum
 {
-    PAGE_MAIN_MENU = 1,
+    PAGE_SELECT_USER = 1,
+    PAGE_MAIN_MENU,
     PAGE_SELECT_MAP,
     PAGE_GAMEPLAY,
     PAGE_ROUND_FINISHED,
@@ -17,7 +19,7 @@ typedef enum
 
 typedef struct
 {
-    char *id;
+    char id[ID_LENGTH + 1];
     char username[MAX_USERNAME_LENGTH + 1];
 } User;
 

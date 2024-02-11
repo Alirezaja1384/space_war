@@ -7,6 +7,8 @@
 #include "render.h"
 #include "game_finished.h"
 
+// TODO: Show rounds won
+
 time_t restart_at;
 
 static enum {
@@ -73,7 +75,7 @@ void render_game_finished(GameState *state_ptr, WINDOW *win)
     wattr_off(win, result_text_color, NULL);
 
     wmove(win, middle_y, middle_x - 16);
-    wprintw(win, "Going back to home in %d seconds!", seconds_remaining());
+    wprintw(win, "Going back home in %d seconds!", seconds_remaining());
 }
 
 static void destroy_game_finished(GameState *state_ptr)

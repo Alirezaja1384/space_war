@@ -5,6 +5,7 @@
 #include <string.h>
 #include "../utils/assertion.h"
 #include "../utils/string.h"
+#include "../utils/users.h"
 #include "../utils/menu.h"
 #include "../game.h"
 #include "select_map.h"
@@ -15,7 +16,7 @@ char *map_paths[MAX_MAPS_COUNT];
 int find_maps(char **file_paths_ptr, int max_finds);
 
 void handle_map_select(void *argv[], int argc);
-void handle_back_to_main_menu(void *argv[], int argc);
+void handle_change_opponent(void *argv[], int argc);
 
 void init_select_maps(GameState *state_ptr)
 {
@@ -42,8 +43,8 @@ void init_select_maps(GameState *state_ptr)
         // Show main menu item if user didn't play an game yet
         fill_menu_item(
             menu_items + found_count,
-            "<|Main menu|>",
-            handle_back_to_main_menu,
+            "<| Change opponent |>",
+            handle_change_opponent,
             (void **)back_argv,
             1);
 
@@ -90,11 +91,13 @@ int find_maps(char **file_paths, int max_finds)
     return found_count;
 }
 
-void handle_back_to_main_menu(void *argv[], int argc)
+void handle_change_opponent(void *argv[], int argc)
 {
     assert(argc == 1);
     GameState *state_ptr = argv[0];
-    state_ptr->page = PAGE_MAIN_MENU;
+
+    logout_user(state_ptr, USER_2);
+    state_ptr->page = PAGE_SELECT_USER;
 }
 
 void handle_map_select(void *argv[], int argc)

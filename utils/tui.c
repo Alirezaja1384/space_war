@@ -22,13 +22,7 @@ WINDOW *setup_tui(int height, int width)
     register_colors();
     refresh();
 
-    mainwin = init_mainwin(height, width);
-    keypad(mainwin, true);
-    wrefresh(mainwin);
-    wtimeout(mainwin, NCURSES_TIMEOUT);
-    wrefresh(mainwin);
-
-    return mainwin;
+    return mainwin = init_centered_win(height, width);
 };
 
 void destroy_tui(void)
@@ -36,11 +30,13 @@ void destroy_tui(void)
     endwin();
 }
 
-WINDOW *init_mainwin(int height, int width)
+WINDOW *init_centered_win(int height, int width)
 {
     WINDOW *win = newwin(height, width, (LINES - height) / 2, (COLS - width) / 2);
-    check(win != NULL, "Unable to initialize main window");
+    check(win != NULL, "Unable to initialize the window");
 
+    keypad(win, true);
+    wtimeout(win, NCURSES_TIMEOUT);
     refresh();
     wrefresh(win);
 
@@ -69,12 +65,6 @@ void destroy_win(WINDOW *win)
     wrefresh(win);
     assert(delwin(win) != ERR);
     refresh();
-}
-
-WINDOW *get_mainwin(void)
-{
-    assert(mainwin != NULL);
-    return mainwin;
 }
 
 WINDOW *get_win(void)
