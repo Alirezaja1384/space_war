@@ -10,6 +10,7 @@ static bool validate_form(FORM *form, validation_error_handler error_handler)
 {
     bool is_valid = true;
     int last_res = E_NO_MATCH;
+    FIELD *initial_field = current_field(form);
 
     form_driver(form, REQ_FIRST_FIELD);
     for (int i = 0; i < field_count(form); i++)
@@ -22,7 +23,11 @@ static bool validate_form(FORM *form, validation_error_handler error_handler)
     }
 
     if (is_valid)
+    {
+        // Prevent automatically focusing on last input while switching between fields
+        set_current_field(form, initial_field);
         return true;
+    }
 
     char *message = NULL;
     switch (last_res)
