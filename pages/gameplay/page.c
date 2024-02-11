@@ -397,12 +397,14 @@ static void draw_aitem(WINDOW *win, AcquirableItem *aitem_ptr)
     wattr_off(win, cp, NULL);
 }
 
-static FIELD *integer_field(int height, int width, int y, int x, int precision, int min, int max)
+static FIELD *integer_field(int height, int width, int y, int x, int precision, int min, int max, char *default_value)
 {
     FIELD *field = not_null(new_field(height, width, y, x, 0, 0));
     set_field_opts(field, FIELD_OPTS);
     set_field_back(field, FIELDS_BACKGROUND);
     set_field_type(field, TYPE_INTEGER, precision, min, max);
+    if (default_value != NULL)
+        set_field_buffer(field, 0, default_value);
 
     return field;
 }
@@ -413,13 +415,13 @@ static void prompt_game_conf(GameState *state_ptr)
     int start_x = 2, field_width = m_width - 4;
 
     FIELD *p1_lives_label = label_field("Enter first player's lives (1-9):", 1, field_width, 1, start_x);
-    FIELD *p1_lives_field = integer_field(1, field_width, 2, start_x, 1, 1, 9);
+    FIELD *p1_lives_field = integer_field(1, field_width, 2, start_x, 1, 1, 9, "5");
 
     FIELD *p2_lives_label = label_field("Enter second player's lives (1-9):", 1, field_width, 3, start_x);
-    FIELD *p2_lives_field = integer_field(1, field_width, 4, start_x, 1, 1, 9);
+    FIELD *p2_lives_field = integer_field(1, field_width, 4, start_x, 1, 1, 9, "5");
 
     FIELD *total_rounds_label = label_field("Enter total rounds (1-9):", 5, field_width, 5, start_x);
-    FIELD *total_rounds_field = integer_field(1, field_width, 6, start_x, 1, 1, 9);
+    FIELD *total_rounds_field = integer_field(1, field_width, 6, start_x, 1, 1, 9, "2");
 
     game_conf_fields[0] = p1_lives_label;
     game_conf_fields[1] = p1_lives_field;

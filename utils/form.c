@@ -8,12 +8,24 @@
 
 static bool validate_form(FORM *form, validation_error_handler error_handler)
 {
-    int res = form_driver(form, REQ_VALIDATION);
-    if (res == E_OK)
+    bool is_valid = true;
+    int last_res = E_NO_MATCH;
+
+    form_driver(form, REQ_FIRST_FIELD);
+    for (int i = 0; i < field_count(form); i++)
+    {
+        is_valid = is_valid && (last_res = form_driver(form, REQ_VALIDATION)) == E_OK;
+        if (is_valid)
+            form_driver(form, REQ_NEXT_FIELD);
+        else
+            break;
+    }
+
+    if (is_valid)
         return true;
 
     char *message = NULL;
-    switch (res)
+    switch (last_res)
     {
     case E_INVALID_FIELD:
         message = "-- Invalid --";
