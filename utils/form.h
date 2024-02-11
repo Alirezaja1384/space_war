@@ -2,6 +2,7 @@
 #define sw_utils_form
 
 #include <form.h>
+#include "colors.h"
 
 #define TAB_KEY 9
 #define SHIFT_TAB_KEY 353

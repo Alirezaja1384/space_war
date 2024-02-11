@@ -4,10 +4,10 @@
 #include "definations.h"
 #include "utils.h"
 
-void init_player(Player *player_ptr, char *username, Coordinates position, Direction direction, UserMeta meta)
+void init_player(Player *player_ptr, char *id, Coordinates position, Direction direction, UserMeta meta)
 {
-    player_ptr->username[0] = '\0';
-    strncat(player_ptr->username, username, MAX_USERNAME_LENGTH);
+    player_ptr->id[0] = '\0';
+    strncat(player_ptr->id, id, ID_LENGTH);
 
     player_ptr->lives = meta.initial_lives;
 

@@ -179,10 +179,6 @@ static void handle_user_create(void *argv[], int argc)
     {
     }
 
-    unpost_form(form);
-    destroy_win(form_win);
-    destroy_win(modal_win);
-
     curs_set(0);
 
     if (submitted)
@@ -190,6 +186,10 @@ static void handle_user_create(void *argv[], int argc)
         char *username = trim_whitespaces(field_buffer(username_field, 0));
         handle_create_user_submit(state_ptr, username);
     }
+
+    unpost_form(form);
+    destroy_win(form_win);
+    destroy_win(modal_win);
 }
 
 static void handle_create_user_submit(GameState *state_ptr, char *username)

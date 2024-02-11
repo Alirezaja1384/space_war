@@ -105,7 +105,7 @@ typedef struct
 
 typedef struct
 {
-    char username[MAX_USERNAME_LENGTH + 1];
+    char id[ID_LENGTH + 1];
 
     int lives;
 

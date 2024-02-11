@@ -2,7 +2,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
+#include <form.h>
+#include <ncurses.h>
 #include "../../utils/tui.h"
+#include "../../utils/form.h"
+#include "../../utils/colors.h"
 #include "../../utils/string.h"
 #include "../../utils/assertion.h"
 #include "../../utils/coordinates.h"
@@ -12,8 +16,12 @@
 #include "sync.h"
 #include "page.h"
 
-WINDOW *header_win = NULL;
-GameplayState gameplay_state;
+static WINDOW *header_win = NULL;
+static GameplayState gameplay_state;
+static FIELD *game_conf_fields[7];
+
+static const Field_Options FIELD_OPTS = O_VISIBLE | O_PUBLIC | O_EDIT | O_ACTIVE;
+static const chtype FIELDS_BACKGROUND = COLOR_PAIR(CP_BLACK_CYAN) | A_UNDERLINE;
 
 static void load_map(char *map_path);
 static void init_players(GameState *state_ptr);
@@ -28,14 +36,18 @@ static void draw_bullet(WINDOW *win, Bullet *bull);
 static void draw_player(WINDOW *win, Player *player, attr_t color);
 static void draw_aitem(WINDOW *win, AcquirableItem *aitem_ptr);
 
+static void prompt_game_conf(GameState *state_ptr);
+
 static void init_gameplay(GameState *state_ptr)
 {
     assert(state_ptr->map_path != NULL);
-    assert(state_ptr->user1.username != NULL);
-    assert(state_ptr->user2.username != NULL);
+    assert(state_ptr->user1_meta.signed_in);
+    assert(state_ptr->user2_meta.signed_in);
+
+    if (state_ptr->played_rounds < 1)
+        prompt_game_conf(state_ptr);
 
     // Initialize map and acquirable items
-    gameplay_state.aitems_count = 0;
     load_map(state_ptr->map_path);
     state_ptr->map_path = NULL;
 
@@ -169,6 +181,8 @@ PageFuncs get_gameplay_page_funcs(void)
 
 static void load_map(char *map_path)
 {
+    gameplay_state.aitems_count = 0;
+
     FILE *fp = fopen(map_path, "r");
     check(fread(&gameplay_state.map, sizeof(Map), 1, fp) == 1, "Unable to read map!");
 
@@ -188,14 +202,14 @@ static void init_players(GameState *state_ptr)
 {
     init_player(
         &gameplay_state.player_1,
-        state_ptr->user1.username,
+        state_ptr->user1.id,
         gameplay_state.map.player1_pos,
         RIGHT,
         state_ptr->user1_meta);
 
     init_player(
         &gameplay_state.player_2,
-        state_ptr->user2.username,
+        state_ptr->user2.id,
         gameplay_state.map.player2_pos,
         LEFT,
         state_ptr->user2_meta);
@@ -243,7 +257,7 @@ static void render_header_player_stats(GameState *state_ptr, WINDOW *win)
     snprintf(p1_info,
              max_userinfo_len,
              "%s | %d " HEART " | %d " GHOST " | %d " GUN_UPGRADE " | %d " GRENADE,
-             p1->username,
+             state_ptr->user1.username,
              p1->lives,
              p1->remaining_ghost_moves,
              p1->remaining_upgraded_shots,
@@ -260,7 +274,7 @@ static void render_header_player_stats(GameState *state_ptr, WINDOW *win)
              p2->remaining_upgraded_shots,
              p2->remaining_ghost_moves,
              p2->lives,
-             p2->username);
+             state_ptr->user2.username);
 
     mvwprintw(win, getmaxy(win) - 1, getmaxx(win) - utf8len(p2_info), p2_info);
 }
@@ -381,4 +395,72 @@ static void draw_aitem(WINDOW *win, AcquirableItem *aitem_ptr)
     wattr_on(win, cp, NULL);
     wprintw(win, cell);
     wattr_off(win, cp, NULL);
+}
+
+static FIELD *integer_field(int height, int width, int y, int x, int precision, int min, int max)
+{
+    FIELD *field = not_null(new_field(height, width, y, x, 0, 0));
+    set_field_opts(field, FIELD_OPTS);
+    set_field_back(field, FIELDS_BACKGROUND);
+    set_field_type(field, TYPE_INTEGER, precision, min, max);
+
+    return field;
+}
+
+static void prompt_game_conf(GameState *state_ptr)
+{
+    int m_height = 10, m_width = MW_WIDTH / 3;
+    int start_x = 2, field_width = m_width - 4;
+
+    FIELD *p1_lives_label = label_field("Enter first player's lives (1-9):", 1, field_width, 1, start_x);
+    FIELD *p1_lives_field = integer_field(1, field_width, 2, start_x, 1, 1, 9);
+
+    FIELD *p2_lives_label = label_field("Enter second player's lives (1-9):", 1, field_width, 3, start_x);
+    FIELD *p2_lives_field = integer_field(1, field_width, 4, start_x, 1, 1, 9);
+
+    FIELD *total_rounds_label = label_field("Enter total rounds (1-9):", 5, field_width, 5, start_x);
+    FIELD *total_rounds_field = integer_field(1, field_width, 6, start_x, 1, 1, 9);
+
+    game_conf_fields[0] = p1_lives_label;
+    game_conf_fields[1] = p1_lives_field;
+    game_conf_fields[2] = p2_lives_label;
+    game_conf_fields[3] = p2_lives_field;
+    game_conf_fields[4] = total_rounds_label;
+    game_conf_fields[5] = total_rounds_field;
+    game_conf_fields[6] = NULL;
+
+    FORM *form = not_null(new_form(game_conf_fields));
+
+    WINDOW *modal_win = init_centered_win(m_height, m_width);
+    WINDOW *form_win = not_null(derwin(modal_win, m_height - 2, m_width - 2, 1, 1));
+
+    curs_set(1);
+
+    set_form_win(form, form_win);
+    set_form_sub(form, modal_win);
+    post_form(form);
+
+    apply_modal_style(modal_win, CP_BLACK_CYAN, "Game configuration");
+    wrefresh(form_win);
+    wrefresh(modal_win);
+    refresh();
+
+    while (!form_handle_keys(form, wgetch(modal_win), NULL))
+    {
+    }
+
+    curs_set(0);
+
+    int p1_lives = atoi(field_buffer(p1_lives_field, 0)),
+        p2_lives = atoi(field_buffer(p2_lives_field, 0)),
+        total_rounds = atoi(field_buffer(total_rounds_field, 0));
+
+    state_ptr->user1_meta.initial_lives = p1_lives;
+    state_ptr->user2_meta.initial_lives = p2_lives;
+    state_ptr->played_rounds = 0;
+    state_ptr->target_rounds = total_rounds;
+
+    unpost_form(form);
+    destroy_win(form_win);
+    destroy_win(modal_win);
 }
