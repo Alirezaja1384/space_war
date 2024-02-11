@@ -47,7 +47,7 @@ bool form_handle_keys(FORM *form, int key, validation_error_handler error_handle
 
     case TAB_KEY:
     case KEY_DOWN:
-        if (validate_form, error_handler)
+        if (validate_form(form, error_handler))
         {
             form_driver(form, REQ_NEXT_FIELD);
             form_driver(form, REQ_END_LINE);
@@ -56,7 +56,7 @@ bool form_handle_keys(FORM *form, int key, validation_error_handler error_handle
 
     case SHIFT_TAB_KEY:
     case KEY_UP:
-        if (validate_form, error_handler)
+        if (validate_form(form, error_handler))
         {
             form_driver(form, REQ_PREV_FIELD);
             form_driver(form, REQ_END_LINE);
