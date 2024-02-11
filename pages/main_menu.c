@@ -18,7 +18,7 @@ void init_main_menu(GameState *state_ptr)
 
     static MenuItem menu_items[] = {
         {"Play", handle_play, state_argv, 1},
-        {"logout", handle_logout, state_argv, 1},
+        {"Logout", handle_logout, state_argv, 1},
         {"Exit", handle_exit, NULL, 0},
         {NULL, NULL, NULL, 0}};
 

@@ -19,8 +19,8 @@ static void load_map(char *map_path);
 static void init_players(GameState *state_ptr);
 
 static void render_header(GameState *state_ptr, WINDOW *win);
-void render_header_game_stats(GameState *state_ptr, WINDOW *win);
-void render_header_player_stats(GameState *state_ptr, WINDOW *win);
+static void render_header_game_stats(GameState *state_ptr, WINDOW *win);
+static void render_header_player_stats(GameState *state_ptr, WINDOW *win);
 
 static void draw_cell(WINDOW *win, Coordinates pos);
 
@@ -212,7 +212,7 @@ static void render_header(GameState *state_ptr, WINDOW *win)
     wrefresh(win);
 }
 
-void render_header_game_stats(GameState *state_ptr, WINDOW *win)
+static void render_header_game_stats(GameState *state_ptr, WINDOW *win)
 {
     // Player 1's won rounds
     wmove(win, 0, 0);
@@ -233,7 +233,7 @@ void render_header_game_stats(GameState *state_ptr, WINDOW *win)
     wattr_off(win, STAR_COLOR_PAIR, NULL);
 }
 
-void render_header_player_stats(GameState *state_ptr, WINDOW *win)
+static void render_header_player_stats(GameState *state_ptr, WINDOW *win)
 {
     const int max_userinfo_len = getmaxx(win) / 2;
     Player *p1 = &gameplay_state.player_1, *p2 = &gameplay_state.player_2;
