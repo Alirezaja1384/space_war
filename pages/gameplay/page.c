@@ -1,5 +1,7 @@
 #include <stdbool.h>
-#include <stdbool.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
 #include <string.h>
 #include <assert.h>
 #include <form.h>
@@ -20,11 +22,22 @@ static WINDOW *header_win = NULL;
 static GameplayState gameplay_state;
 static FIELD *game_conf_fields[7];
 
+static int current_key = ERR;
+
+static sem_t sync_render_mutex;
+static pthread_t bullet_move_thread;
+static pthread_t keys_register_thread;
+static pthread_t sync_thread;
+
 static const Field_Options FIELD_OPTS = O_VISIBLE | O_PUBLIC | O_EDIT | O_ACTIVE;
 static const chtype FIELDS_BACKGROUND = COLOR_PAIR(CP_BLACK_CYAN) | A_UNDERLINE;
 
 static void load_map(char *map_path);
 static void init_players(GameState *state_ptr);
+
+static void *run_move_bullets_thread(void *);
+static void *run_register_keys_thread(void *);
+static void *run_sync_thread(void *);
 
 static void render_header(GameState *state_ptr, WINDOW *win);
 static void render_header_game_stats(GameState *state_ptr, WINDOW *win);
@@ -72,89 +85,27 @@ static void init_gameplay(GameState *state_ptr)
     // Create header window
     header_win = init_header_win(MAP_HEIGHT, MAP_WIDTH);
 
-    // Set sync needed
+    // Sync, then render
     gameplay_state.sync_needed = true;
+    gameplay_state.render_needed = false;
+
+    sem_init(&sync_render_mutex, 0, 1);
+    pthread_create(&bullet_move_thread, NULL, run_move_bullets_thread, NULL);
+    pthread_create(&keys_register_thread, NULL, run_register_keys_thread, NULL);
+    pthread_create(&sync_thread, NULL, run_sync_thread, state_ptr);
 }
 
 static void gameplay_handle_keys(GameState *state_ptr, int key)
 {
-    bool valid_key = true;
-
-    switch (key)
-    {
-        //               <Player 1 keys>
-    case K_PLAYER_1_UP:
-        move_player(&gameplay_state.player_1, UP);
-        break;
-
-    case K_PLAYER_1_RIGHT:
-        move_player(&gameplay_state.player_1, RIGHT);
-        break;
-
-    case K_PLAYER_1_DOWN:
-        move_player(&gameplay_state.player_1, DOWN);
-        break;
-
-    case K_PLAYER_1_LEFT:
-        move_player(&gameplay_state.player_1, LEFT);
-        break;
-
-    case K_PLAYER_1_SHOOT:
-        fire_bullet(&gameplay_state, &gameplay_state.player_1);
-        break;
-    //                  </Player 1 keys>
-
-    //                  <Player 2 keys>
-    case K_PLAYER_2_UP:
-        move_player(&gameplay_state.player_2, UP);
-        break;
-
-    case K_PLAYER_2_RIGHT:
-        move_player(&gameplay_state.player_2, RIGHT);
-        break;
-
-    case K_PLAYER_2_DOWN:
-        move_player(&gameplay_state.player_2, DOWN);
-        break;
-
-    case K_PLAYER_2_LEFT:
-        move_player(&gameplay_state.player_2, LEFT);
-        break;
-
-    case K_PLAYER_2_SHOOT:
-        fire_bullet(&gameplay_state, &gameplay_state.player_2);
-        break;
-        //              </Player 2 keys>
-
-    default:
-        valid_key = false;
-    }
-
-    // Remember to sync after each key
-    gameplay_state.sync_needed = valid_key;
+    if (current_key == ERR)
+        current_key = key;
 };
-
-static void gameplay_sync(GameState *state_ptr)
-{
-    gameplay_state.sync_needed = true;
-
-    // TODO: use threads!
-    // TODO: mutext to prevent moving bullets during gap between sync and render!
-    for (int i = 0; i < MAX_ACTIVE_BULLETS; i++)
-    {
-        Bullet *bull = gameplay_state.bullets + i;
-        move_bullet(bull);
-    }
-
-    if (gameplay_state.sync_needed)
-    {
-        sync_gameplay_states(state_ptr, &gameplay_state);
-        gameplay_state.sync_needed = false;
-    }
-}
 
 static void render_gameplay(GameState *state_ptr, WINDOW *win)
 {
+    if (!gameplay_state.render_needed)
+        return;
+
     render_header(state_ptr, header_win);
 
     for (int j = 0; j < MAP_HEIGHT; j++)
@@ -165,10 +116,17 @@ static void render_gameplay(GameState *state_ptr, WINDOW *win)
             draw_cell(win, (Coordinates){j, i});
         }
     }
+
+    gameplay_state.render_needed = false;
 }
 
 static void destroy_gameplay(GameState *state_ptr)
 {
+    pthread_cancel(bullet_move_thread);
+    pthread_cancel(keys_register_thread);
+    pthread_cancel(sync_thread);
+    sem_destroy(&sync_render_mutex);
+
     // Get rid of header window
     destroy_win(header_win);
     header_win = NULL;
@@ -179,7 +137,7 @@ PageFuncs get_gameplay_page_funcs(void)
     return (PageFuncs){
         init_gameplay,
         gameplay_handle_keys,
-        gameplay_sync,
+        NULL,
         render_gameplay,
         destroy_gameplay,
     };
@@ -219,6 +177,113 @@ static void init_players(GameState *state_ptr)
         gameplay_state.map.player2_pos,
         LEFT,
         state_ptr->user2_meta);
+}
+
+static void *run_move_bullets_thread(void *args)
+{
+    while (true)
+    {
+        sem_wait(&sync_render_mutex);
+
+        for (int i = 0; i < MAX_ACTIVE_BULLETS; i++)
+        {
+            Bullet *bull = gameplay_state.bullets + i;
+            move_bullet(bull);
+        }
+
+        gameplay_state.sync_needed = true;
+
+        usleep(BULLET_MOVE_INTERVAL_MILISECONDS * 1000);
+    }
+}
+
+static void *run_register_keys_thread(void *args)
+{
+
+    while (1)
+    {
+
+        if (current_key == ERR)
+            continue;
+
+        sem_wait(&sync_render_mutex);
+
+        bool valid_key = true;
+        switch (current_key)
+        {
+            //               <Player 1 keys>
+        case K_PLAYER_1_UP:
+            move_player(&gameplay_state.player_1, UP);
+            break;
+
+        case K_PLAYER_1_RIGHT:
+            move_player(&gameplay_state.player_1, RIGHT);
+            break;
+
+        case K_PLAYER_1_DOWN:
+            move_player(&gameplay_state.player_1, DOWN);
+            break;
+
+        case K_PLAYER_1_LEFT:
+            move_player(&gameplay_state.player_1, LEFT);
+            break;
+
+        case K_PLAYER_1_SHOOT:
+            fire_bullet(&gameplay_state, &gameplay_state.player_1);
+            break;
+        //                  </Player 1 keys>
+
+        //                  <Player 2 keys>
+        case K_PLAYER_2_UP:
+            move_player(&gameplay_state.player_2, UP);
+            break;
+
+        case K_PLAYER_2_RIGHT:
+            move_player(&gameplay_state.player_2, RIGHT);
+            break;
+
+        case K_PLAYER_2_DOWN:
+            move_player(&gameplay_state.player_2, DOWN);
+            break;
+
+        case K_PLAYER_2_LEFT:
+            move_player(&gameplay_state.player_2, LEFT);
+            break;
+
+        case K_PLAYER_2_SHOOT:
+            fire_bullet(&gameplay_state, &gameplay_state.player_2);
+            break;
+            //              </Player 2 keys>
+
+        default:
+            valid_key = false;
+        }
+
+        // Remember to sync after each key
+        if (valid_key)
+            gameplay_state.sync_needed = true;
+        else
+            sem_post(&sync_render_mutex);
+
+        current_key = ERR;
+    }
+}
+
+static void *run_sync_thread(void *args)
+{
+    GameState *state_ptr = (GameState *)args;
+
+    while (true)
+    {
+        // sem_wait(&sync_render_mutex);
+        if (gameplay_state.sync_needed)
+        {
+            sync_gameplay_states(state_ptr, &gameplay_state);
+            gameplay_state.sync_needed = false;
+            gameplay_state.render_needed = true;
+            sem_post(&sync_render_mutex);
+        }
+    }
 }
 
 static void render_header(GameState *state_ptr, WINDOW *win)

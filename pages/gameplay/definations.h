@@ -10,6 +10,8 @@
 #define MAP_HEIGHT MW_HEIGHT
 #define MAP_WIDTH MW_WIDTH
 
+#define BULLET_MOVE_INTERVAL_MILISECONDS 25
+
 #define MAX_ACQUIRABLE_ITEMS 15
 #define MAX_ACTIVE_BULLETS 20
 
@@ -131,6 +133,7 @@ typedef struct
 typedef struct
 {
     bool sync_needed;
+    bool render_needed;
 
     Player player_1;
     Player player_2;
